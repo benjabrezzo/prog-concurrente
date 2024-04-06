@@ -3,15 +3,15 @@ package tareas;
 public class Tarea {
 
     public Tarea() {
-        System.out.printf("En Tarea thread \"½s\":", // Este system out va en el hilo principal (main)
+        System.out.printf("Estoy en el constructor tarea en el hilo: %s\n", // Este system out va en el hilo principal (main)
                 Thread.currentThread().getName());
 
         // (2) Se crea una instancia de Calculator con un valor de número específico, Calculator implementa la interfaz Runnable
         Calculator calc = new Calculator(4);
         // (3) Luego inicia un nuevo hilo (Thread) con el objeto de Calculator calc, es decir, con el objeto que implementa Runnable
         Thread h1 = new Thread(calc); // Hasta aca t0do en el hilo principal
-        h1.start();
-    //    h1.run();
+     //   h1.start();
+        h1.run();
     }
 
     // El método start() es parte de la clase Thread, se encarga de iniciar un nuevo hilo, reservar recursos del sistema y ejecutar el método run() en este nuevo hilo.
