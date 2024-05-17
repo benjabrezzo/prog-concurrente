@@ -1,0 +1,116 @@
+Main : Status of Thread 0 : NEW
+Main : Status of Thread 1 : NEW
+Main : Status of Thread 2 : NEW
+Main : Status of Thread 3 : NEW
+Main : Status of Thread 4 : NEW
+Main : Status of Thread 5 : NEW
+Main : Status of Thread 6 : NEW
+Main : Status of Thread 7 : NEW
+Main : Status of Thread 8 : NEW
+Main : Status of Thread 9 : NEW
+
+Main : Id 21 - Hilo numero 0
+Main : Priotity 10
+Main : Old State NEW
+Main : New State RUNNABLE
+
+Main : Id 22 - Hilo numero 1
+Main : Priotity 1
+Main : Old State NEW
+Main : New State RUNNABLE
+
+Main : Id 23 - Hilo numero 2
+Main : Priotity 1
+Main : Old State NEW
+Main : New State RUNNABLE
+
+Main : Id 24 - Hilo numero 3
+Main : Priotity 1
+Main : Old State NEW
+Main : New State RUNNABLE
+
+Main : Id 25 - Hilo numero 4
+Main : Priotity 1
+Main : Old State NEW
+Main : New State RUNNABLE
+
+Main : Id 26 - Hilo numero 5
+Main : Priotity 1
+Main : Old State NEW
+Main : New State RUNNABLE
+
+Main : Id 27 - Hilo numero 6
+Main : Priotity 1
+Main : Old State NEW
+Main : New State RUNNABLE
+
+Main : Id 28 - Hilo numero 7
+Main : Priotity 1
+Main : Old State NEW
+Main : New State RUNNABLE
+
+Main : Id 29 - Hilo numero 8
+Main : Priotity 1
+Main : Old State NEW
+Main : New State RUNNABLE
+
+Main : Id 30 - Hilo numero 9
+Main : Priotity 1
+Main : Old State NEW
+Main : New State RUNNABLE
+
+Main : Id 27 - Hilo numero 6
+Main : Priotity 1
+Main : Old State RUNNABLE
+Main : New State WAITING
+
+Main : Id 29 - Hilo numero 8
+Main : Priotity 1
+Main : Old State RUNNABLE
+Main : New State WAITING
+
+Main : Id 21 - Hilo numero 0
+Main : Priotity 10
+Main : Old State RUNNABLE
+Main : New State WAITING
+
+Main : Id 22 - Hilo numero 1
+Main : Priotity 1
+Main : Old State RUNNABLE
+Main : New State TERMINATED
+
+Main : Id 23 - Hilo numero 2
+Main : Priotity 1
+Main : Old State RUNNABLE
+Main : New State TERMINATED
+
+Main : Id 25 - Hilo numero 4
+Main : Priotity 1
+Main : Old State RUNNABLE
+Main : New State TERMINATED
+
+Main : Id 26 - Hilo numero 5
+Main : Priotity 1
+Main : Old State RUNNABLE
+Main : New State RUNNABLE
+
+Main : Id 27 - Hilo numero 6
+Main : Priotity 1
+Main : Old State RUNNABLE
+Main : New State TERMINATED
+
+Main : Id 28 - Hilo numero 7
+Main : Priotity 1
+Main : Old State RUNNABLE
+Main : New State TERMINATED
+
+Main : Id 29 - Hilo numero 8
+Main : Priotity 1
+Main : Old State WAITING
+Main : New State TERMINATED
+
+Main : Id 30 - Hilo numero 9
+Main : Priotity 1
+Main : Old State RUNNABLE
+Main : New State TERMINATED
+
