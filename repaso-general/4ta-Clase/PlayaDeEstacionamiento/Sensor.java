@@ -14,7 +14,7 @@ public class Sensor implements Runnable {
             // Entran dos autos
             stats.carComeIn();
             stats.carComeIn();
-            // Espera 50 milisegundo
+            // Espera 50 milisegundos
             try{
                 TimeUnit.MILLISECONDS.sleep(50);
             } catch (InterruptedException e) {

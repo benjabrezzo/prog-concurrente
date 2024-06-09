@@ -11,7 +11,7 @@ public class ParkingStats {
     private ParkingCash cash;
 
     /**
-     * Contructor og the class
+     * Contructor of the class
      * */
 
     public ParkingStats(ParkingCash cash) {
