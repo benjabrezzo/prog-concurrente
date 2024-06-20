@@ -1,0 +1,150 @@
+La interrupción de hilos es un mecanismo en Java que permite a un hilo señalizar a otro hilo que debería detener lo que está haciendo y hacer algo diferente, típicamente finalizar su ejecución. Este mecanismo se usa a menudo para gestionar la terminación de hilos de forma más controlada.
+
+### Conceptos Básicos
+
+En Java, cada hilo tiene un estado de interrupción. Cuando se interrumpe un hilo, su estado de interrupción se establece y puede ser consultado o limpiado por el hilo mismo.
+
+### Métodos Principales
+
+#### `interrupt()`
+
+Este método se utiliza para interrumpir un hilo. Establece el estado de interrupción del hilo objetivo.
+
+```java
+thread.interrupt();
+```
+
+#### `isInterrupted()`
+
+Este método devuelve el estado de interrupción del hilo, pero no lo restablece.
+
+```java
+if (thread.isInterrupted()) {
+    // El hilo ha sido interrumpido
+}
+```
+
+#### `interrupted()`
+
+Este método es estático y verifica el estado de interrupción del hilo actual, además de restablecerlo.
+
+```java
+if (Thread.interrupted()) {
+    // El hilo actual ha sido interrumpido y se ha limpiado el estado de interrupción
+}
+```
+
+### Comportamiento de la Interrupción
+
+- **Hilos Bloqueados**: Si un hilo está bloqueado (por ejemplo, esperando en un método como `wait()`, `sleep()`, o `join()`), la interrupción hará que estas operaciones lancen una excepción `InterruptedException`.
+- **Hilos No Bloqueados**: Si un hilo no está bloqueado, simplemente se establece su estado de interrupción. Es responsabilidad del hilo verificar periódicamente su estado de interrupción y reaccionar adecuadamente.
+
+### Ejemplo de Interrupción
+
+Aquí hay un ejemplo sencillo que muestra cómo interrumpir un hilo:
+
+```java
+public class InterruptionExample {
+
+    public static void main(String[] args) {
+        Thread hilo = new Thread(new TareaInterrumpible());
+        hilo.start();
+
+        try {
+            Thread.sleep(2000); // Esperar 2 segundos antes de interrumpir el hilo, el hilo que se pone a dormir es este (normalmente el "Main"), es decir, NO el que está ejecutando lo que sea que esté en el run().
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        hilo.interrupt(); // Interrumpir el hilo
+    }
+}
+
+class TareaInterrumpible implements Runnable {
+
+    @Override
+    public void run() {
+        try {
+            while (!Thread.currentThread().isInterrupted()) {
+                System.out.println("El hilo está ejecutando...");
+                Thread.sleep(1000); // Simular trabajo
+            }
+        } catch (InterruptedException e) {
+            // La interrupción se ha producido durante el sleep
+            System.out.println("El hilo ha sido interrumpido durante el sleep.");
+        } finally {
+            System.out.println("El hilo está terminando.");
+        }
+    }
+}
+```
+
+### Buenas Prácticas
+
+1. **Verificar Periodicamente el Estado de Interrupción**: Los hilos deberían comprobar su estado de interrupción periódicamente si están ejecutando tareas largas o en bucles.
+
+    ```java
+    while (!Thread.currentThread().isInterrupted()) {
+        // Realizar tareas
+    }
+    ```
+
+2. **Propagar `InterruptedException`**: Si un método lanza `InterruptedException`, es buena práctica propagar esta excepción hacia arriba o manejarla adecuadamente para preservar el estado de interrupción.
+
+    ```java
+    try {
+        // Código que puede lanzar InterruptedException
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt(); // Restablecer el estado de interrupción
+        // Manejar la interrupción
+    }
+    ```
+
+3. **Limpiar Recursos**: Asegúrate de limpiar cualquier recurso (cerrar archivos, liberar locks, etc.) en un bloque `finally` si el hilo es interrumpido.
+
+### Ejemplo de Uso Avanzado
+
+Imaginemos que tenemos un proceso de trabajo en un bucle, verificando su estado de interrupción periódicamente:
+
+```java
+public class AdvancedInterruptionExample {
+
+    public static void main(String[] args) {
+        Thread worker = new Thread(new WorkerTask());
+        worker.start();
+
+        try {
+            Thread.sleep(5000); // Simular tiempo de trabajo principal
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        worker.interrupt(); // Interrumpir el hilo de trabajo
+    }
+}
+
+class WorkerTask implements Runnable {
+
+    @Override
+    public void run() {
+        try {
+            while (!Thread.currentThread().isInterrupted()) {
+                // Realizar tareas
+                System.out.println("Trabajando...");
+                // Simular trabajo
+                Thread.sleep(1000);
+            }
+        } catch (InterruptedException e) {
+            // Manejar la interrupción
+            Thread.currentThread().interrupt(); // Restablecer el estado de interrupción
+        } finally {
+            // Limpiar recursos si es necesario
+            System.out.println("Limpiando recursos...");
+        }
+
+        System.out.println("El hilo de trabajo ha terminado.");
+    }
+}
+```
+
+En este ejemplo, el hilo `WorkerTask` se ejecuta en un bucle, verifica su estado de interrupción y maneja adecuadamente la excepción `InterruptedException`. Cuando el hilo principal interrumpe al hilo `WorkerTask` después de 5 segundos, este limpia los recursos y termina su ejecución.
