@@ -1,0 +1,218 @@
+### Definición de la clase `Lock`
+
+La clase `Lock` es parte del paquete `java.util.concurrent.locks` y proporciona mecanismos de sincronización más flexibles que los ofrecidos por los monitores tradicionales (usando `synchronized`). La interfaz `Lock` define métodos que permiten a los desarrolladores controlar el acceso a recursos compartidos por múltiples hilos.
+
+### Ventajas y Desventajas
+
+#### Ventajas
+
+1. **Mayor Flexibilidad**: Los locks proporcionan mayor control sobre la sincronización, incluyendo intentos de adquisición con tiempo de espera y la capacidad de verificar si el lock está disponible.
+2. **Métodos No Bloqueantes**: Métodos como `tryLock()` permiten que un hilo continúe su ejecución si no puede adquirir el lock, en lugar de quedarse bloqueado.
+3. **Desbloqueo Condicional**: Permite el uso de condiciones (`Condition`), ofreciendo una forma más flexible y poderosa de esperar y notificar eventos entre hilos.
+4. **Justicia (Fairness)**: Se puede crear un lock en modo justo, lo que garantiza que los hilos accedan al recurso en el orden en que solicitaron el lock.
+
+#### Desventajas
+
+1. **Complejidad**: El uso de locks explícitos puede hacer el código más complejo y propenso a errores, como olvidarse de liberar el lock.
+2. **Sobrecarga**: Los locks pueden introducir una sobrecarga adicional en comparación con los mecanismos de sincronización intrínsecos.
+3. **Posibles Deadlocks**: Si no se manejan adecuadamente, pueden causar deadlocks, donde dos o más hilos se bloquean mutuamente esperando por recursos.
+
+### Funcionamiento
+
+Para usar un `Lock`, primero debes obtener una instancia de un lock, típicamente un `ReentrantLock`. Aquí hay un ejemplo básico de cómo se utiliza:
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class LockExample {
+    private final Lock lock = new ReentrantLock();
+
+    public void performTask() {
+        lock.lock();
+        try {
+            // Sección crítica
+        } finally {
+            lock.unlock();
+        }
+    }
+}
+
+
+En este ejemplo, se adquiere el lock antes de entrar en la sección crítica y se libera en el bloque `finally` para asegurarse de que siempre se libera, incluso si ocurre una excepción.
+
+### Método `tryLock()`
+
+El método `tryLock()` intenta adquirir el lock de manera no bloqueante. Este método devuelve `true` si el lock se adquirió exitosamente, y `false` si no estaba disponible en ese momento.
+
+
+public void performTaskWithTryLock() {
+    if (lock.tryLock()) {
+        try {
+            // Sección crítica
+        } finally {
+            lock.unlock();
+        }
+    } else {
+        // No se pudo adquirir el lock, manejar esta situación
+    }
+}
+
+CONSULTA: No tendría sentido usar el tryLock() como primera instancia verdad? O no pasa nada si se usa al principio. Digo porque si hasta ahora no se usa nada de Lock, el "primer" lock.lock() debería funcionar sin problema verdad?
+
+
+`tryLock()` también tiene una variante que permite especificar un tiempo de espera:
+
+
+import java.util.concurrent.TimeUnit;
+
+public void performTaskWithTryLockTimeout() throws InterruptedException {
+    if (lock.tryLock(1000, TimeUnit.MILLISECONDS)) {
+        try {
+            // Sección crítica
+        } finally {
+            lock.unlock();
+        }
+    } else {
+        // No se pudo adquirir el lock dentro del tiempo especificado
+    }
+}
+CONSULTA: ¿Osea que revisa si el "cerrojo" está disponible una y otra vez durante ese intervalo de tiempo?
+
+### Modo justo (Fair Mode)
+
+El modo justo garantiza que los hilos obtendrán el lock en el orden en que lo solicitaron. Esto se logra pasando `true` al constructor de `ReentrantLock`.
+
+```java
+private final Lock fairLock = new ReentrantLock(true);
+```
+
+En el modo justo, los hilos se programan en cola, lo que previene la inanición (donde un hilo nunca obtiene el lock porque otros hilos continúan obteniéndolo primero). Sin embargo, puede introducir mayor latencia y reducir el rendimiento en algunos casos debido al manejo de la cola.
+
+### Ejemplo completo con todo lo mencionado
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class LockExample {
+    private final Lock lock = new ReentrantLock(true); // Modo justo
+
+    public void performTask() {
+        lock.lock();
+        try {
+            // Sección crítica
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void performTaskWithTryLock() {
+        if (lock.tryLock()) {
+            try {
+                // Sección crítica
+            } finally {
+                lock.unlock();
+            }
+        } else {
+            // No se pudo adquirir el lock, manejar esta situación
+        }
+    }
+
+    public void performTaskWithTryLockTimeout() throws InterruptedException {
+        if (lock.tryLock(1000, TimeUnit.MILLISECONDS)) {
+            try {
+                // Sección crítica
+            } finally {
+                lock.unlock();
+            }
+        } else {
+            // No se pudo adquirir el lock dentro del tiempo especificado
+        }
+    }
+}
+```
+
+En resumen, la clase `Lock` proporciona un control detallado sobre la sincronización en aplicaciones concurrentes, pero requiere un manejo cuidadoso para evitar errores y problemas de rendimiento.
+
+
+Respuestas a consultas hechas en líneas 60 y 79:
+Vamos a aclarar tus dudas sobre `tryLock()` y su uso.
+
+### Uso de `tryLock()` como primera instancia
+
+Sí, tienes razón en que usar `tryLock()` como primera instancia puede no ser necesario en muchos casos. La principal diferencia entre `lock()` y `tryLock()` es que `lock()` esperará indefinidamente hasta que el lock esté disponible, mientras que `tryLock()` no esperará y te permitirá saber inmediatamente si se pudo adquirir el lock.
+
+#### Ejemplo básico de `lock()`
+
+```java
+public void performTask() {
+    lock.lock();
+    try {
+        // Sección crítica
+    } finally {
+        lock.unlock();
+    }
+}
+```
+
+En este ejemplo, `lock.lock()` asegura que el hilo entrará en la sección crítica tan pronto como el lock esté disponible, sin importar cuánto tiempo deba esperar.
+
+#### Ejemplo básico de `tryLock()`
+
+```java
+public void performTaskWithTryLock() {
+    if (lock.tryLock()) {
+        try {
+            // Sección crítica
+        } finally {
+            lock.unlock();
+        }
+    } else {
+        // No se pudo adquirir el lock, manejar esta situación
+    }
+}
+```
+
+En este ejemplo, `tryLock()` intentará adquirir el lock. Si no puede, el hilo simplemente no entrará en la sección crítica y puedes manejar esta situación de manera diferente, tal vez reintentando más tarde o haciendo otra cosa.
+
+### Uso de `tryLock()` en primera instancia
+
+No hay ningún problema en usar `tryLock()` como primera instancia, pero debes tener en cuenta el comportamiento que deseas. Si necesitas que el hilo espere hasta que el lock esté disponible, `lock()` es más adecuado. Si prefieres que el hilo continúe haciendo otras cosas si no puede adquirir el lock inmediatamente, `tryLock()` es la mejor opción.
+
+### `tryLock()` con tiempo de espera
+
+Cuando usas `tryLock()` con un tiempo de espera, el hilo intentará adquirir el lock repetidamente hasta que se agote el tiempo especificado o el lock se vuelva disponible.
+
+#### Ejemplo de `tryLock()` con tiempo de espera
+
+```java
+import java.util.concurrent.TimeUnit;
+
+public void performTaskWithTryLockTimeout() throws InterruptedException {
+    if (lock.tryLock(1000, TimeUnit.MILLISECONDS)) {
+        try {
+            // Sección crítica
+        } finally {
+            lock.unlock();
+        }
+    } else {
+        // No se pudo adquirir el lock dentro del tiempo especificado
+    }
+}
+```
+
+En este ejemplo, `tryLock(1000, TimeUnit.MILLISECONDS)` intentará adquirir el lock y esperará hasta 1000 milisegundos para ver si el lock se vuelve disponible. Si el lock se adquiere dentro de ese tiempo, el método devuelve `true` y se entra en la sección crítica. Si no, el método devuelve `false` después de que el tiempo se agote.
+
+### Detalles del comportamiento
+
+- **Polling**: Durante el intervalo de tiempo especificado, `tryLock()` no hace polling (consulta repetida) de manera explícita para ver si el lock está disponible. En cambio, delega esta tarea al sistema subyacente que maneja los locks, que puede hacerlo de manera más eficiente.
+- **Bloqueo hasta el tiempo límite**: Mientras espera, el hilo puede ser bloqueado de manera eficiente por el sistema operativo o la JVM, evitando el uso intensivo de la CPU que un bucle de polling podría causar.
+
+### Consideraciones adicionales
+
+- **Uso estratégico**: Usa `tryLock()` cuando necesites que los hilos continúen trabajando si el recurso no está disponible inmediatamente.
+- **Evitar bloqueos prolongados**: Si `lock()` podría causar bloqueos prolongados en tu aplicación, considera `tryLock()` con o sin tiempo de espera para mejorar la respuesta del sistema.
+- **Manejo de tiempos de espera**: `tryLock()` con tiempo de espera es útil en sistemas donde los hilos deben realizar otras tareas si no pueden adquirir el lock rápidamente.
+
+### Conclusión
+
+El uso de `lock()` o `tryLock()` depende del comportamiento que desees en tu aplicación concurrente. Ambos métodos tienen su lugar y pueden ser usados estratégicamente para mejorar la eficiencia y respuesta de tu sistema.

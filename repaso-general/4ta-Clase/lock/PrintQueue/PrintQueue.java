@@ -11,7 +11,8 @@ public class PrintQueue {
 
     /** Cuando fairMode es True garantiza que los hilos obtendrán el bloqueo en el orden que lo solicitaron (FIFO - First In First Out)
      *  esto es útil para evitar la inanición (starvation) de hilos.
-     *  Cuando es False, el bloqueo no es justo y puede ser adquirido por cualquier hilo de manera no determinística.*/
+     *  Cuando es False, el bloqueo no es justo y puede ser adquirido por cualquier hilo de manera no determinística.
+     *  Sin embargo, sin el FairMode la cosa es más rápida.*/
 
     public PrintQueue(boolean fairMode) {
         queueLock = new ReentrantLock(fairMode);
@@ -20,6 +21,7 @@ public class PrintQueue {
     public void printJob(Object document) {
         queueLock.lock();
         try{
+            // Sección crítica:
             Long duration = (long) (Math.random() * 10000);
             System.out.println(Thread.currentThread().getName() + ": PrintingQueue: Printing a Job durring "+(duration / 1000) + " seconds\n");
             Thread.sleep(duration);
