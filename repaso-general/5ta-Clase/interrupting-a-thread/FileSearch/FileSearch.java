@@ -61,7 +61,7 @@ public class FileSearch implements Runnable{
      * */
     private void fileProcess(File file) throws InterruptedException{
         if(file.getName().equals(fileName)){
-            System.out.printf(Thread.currentThread().getName()+" : "+file.getAbsolutePath());
+            System.out.printf(Thread.currentThread().getName()+" : "+file.getAbsolutePath()+"\n");
         }
 
         if(Thread.interrupted()){
@@ -70,3 +70,21 @@ public class FileSearch implements Runnable{
     }
 
 }
+
+/**
+ * IMPORTANTE (tal vez para el coloquio): En el programa PrimeGenerator extendíamos la clase Thread, la cual tiene
+ * un método isInterrupted() para saber si el hilo fue interrumpido.
+ * Pero en este programa NO ESTAMOS EXTENDIENDO THREAD. Estamos usando Runnable, por ende usamos el método
+ * estático de la clase Thread: Thread.interrupted(), que se puede ver en el if de la línea 67.
+ * Lo que hace es:
+ * 1. Buscar que hilo se está ejecutando.
+ * 2. Preguntar si está interrumpido.
+ * El método isInterrupted() solo pregunta si está interrumpido, ya que se usa sobre el hilo que está trabajando (o estaba porque se interrumpio).
+ * En conclusión, la diferencia es que el método estático hace solo un paso más, el de averiguar que hilo se está ejecutando.
+ *
+ * Tambien es IMPORTANTE DESTACAR: Que este programa interrumpe a un hilo que está ACTIVO. Mientras que en el próximo
+ * programa (FileClock) se interrumpirá a un hilo que estará DORMIDO. Y cuando se interrumpe un hilo dormido se
+ * LANZA UNA EXCEPCIÓN automáticamente. Acá (que está activo) tenemos que preguntar con el isInterrupted() y luego
+ * lanzar la excepción manualmente.
+ *
+ * */
